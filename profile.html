@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль | L-U-N-E-V</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <img src="images/logo1.png" alt="L-U-N-E-V" class="logo-img">
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav">
+        <a href="favorites.html">❤️ Избранное</a>
+        <a href="cart.html">🛒 Корзина</a>
+        <a href="profile.html" class="active">👤 Профиль</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="profile-container" id="profile-container">
+    <div class="loading" style="text-align: center; padding: 50px;">
+      <p>⏳ Загрузка профиля...</p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <!-- стандартный футер -->
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>L-U-N-E-V</h3>
+      <p>Будущее Здесь и Сейчас. Самые современные технологии и гаджеты для вашего комфорта.</p>
+      <div class="social-links">
+        <a href="#"> VK</a>
+        <a href="#"> Telegram</a>
+        <a href="#"> Twitter</a>
+        <a href="#"> YouTube</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Магазин</h4>
+      <ul>
+        <li><a href="product-telephone.html">Смартфоны</a></li>
+        <li><a href="product-consoles.html">Игровые консоли</a></li>
+        <li><a href="product-headphone.html">Наушники</a></li>
+        <li><a href="product-port-consoles.html">Портативные консоли</a></li>
+        <li><a href="product-washmashine.html">Техника для дома</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Помощь</h4>
+      <ul>
+        <li><a href="#">Центр поддержки</a></li>
+        <li><a href="#">Доставка и оплата</a></li>
+        <li><a href="#">Гарантия и возврат</a></li>
+        <li><a href="#">Частые вопросы</a></li>
+        <li><a href="#">Контакты</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Контакты</h4>
+      <div class="contact-info">
+        <p>📧 Email: MR.ANDREW.BRAUNI@mamamia.ru</p>
+        <p>📞 Телефон: +7 (914) 123-4-88</p>
+        <p>🕒 Время работы: 9:00-21:00</p>
+        <p>📍 Адрес: г. Удомля, ул. Космонавтов, 42</p>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Безопасность</h4>
+      <div class="security-badges">
+        <div>🔒 Защита есть - клянусь</div>
+        <div>💳 Безопасная оплата - можно авшорами</div>
+        <div>📦 Гарантия доставки - 2 недели</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2025 L-U-N-E-V. Будущее Здесь и Сейчас. Все права защищены.</p>
+    <div class="footer-links">
+      <a href="#">Политика конфиденциальности</a>
+      <a href="#">Условия использования</a>
+      <a href="#">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Константы
+const API_URL = 'http://localhost:3002/api';
+
+// Проверяем авторизацию
+if (localStorage.getItem('loggedIn') !== 'true') {
+  window.location.href = 'login.html';
+}
+
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+// Функция показа уведомления
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `<span>${message}</span>`;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Загрузка профиля
+async function loadProfile() {
+  const container = document.getElementById('profile-container');
+  
+  if (!currentUser.id) {
+    container.innerHTML = `
+      <div class="loading">
+        <p>❌ Ошибка загрузки профиля</p>
+        <button class="btn btn-primary" onclick="window.location.href='login.html'">Войти</button>
+      </div>
+    `;
+    return;
+  }
+  
+  try {
+    // Пробуем получить данные о корзине и избранном
+    const [cartResponse, favoritesResponse] = await Promise.all([
+      fetch(`${API_URL}/cart/user/${currentUser.id}`).catch(() => ({ok: false})),
+      fetch(`${API_URL}/favorites/user/${currentUser.id}`).catch(() => ({ok: false}))
+    ]);
+    
+    let cartCount = 0;
+    let favoritesCount = 0;
+    
+    if (cartResponse.ok) {
+      const cartData = await cartResponse.json();
+      cartCount = cartData.cart ? cartData.cart.length : 0;
+    }
+    
+    if (favoritesResponse.ok) {
+      const favoritesData = await favoritesResponse.json();
+      favoritesCount = favoritesData.favorites ? favoritesData.favorites.length : 0;
+    }
+    
+    // Отображаем профиль
+    renderProfile(cartCount, favoritesCount);
+    
+  } catch (error) {
+    console.error('Ошибка загрузки профиля:', error);
+    // Показываем профиль без статистики
+    renderProfile(0, 0);
+  }
+}
+
+// Рендер профиля
+function renderProfile(cartCount, favoritesCount) {
+  const container = document.getElementById('profile-container');
+  
+  const firstName = currentUser.firstName || currentUser.first_name || 'Пользователь';
+  const lastName = currentUser.lastName || currentUser.last_name || '';
+  const email = currentUser.email || 'Не указан';
+  const phone = currentUser.phone || 'Не указан';
+  const createdAt = currentUser.createdAt || new Date().toISOString();
+  const registrationDate = new Date(createdAt).toLocaleDateString('ru-RU');
+  
+  container.innerHTML = `
+    <div class="profile-header">
+      <div class="profile-avatar">
+        ${firstName[0]?.toUpperCase() || 'П'}
+      </div>
+      <div class="profile-info">
+        <h1>${firstName} ${lastName}</h1>
+        <div class="profile-actions">
+          <button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-stats">
+      <h2>📊 Статистика</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">${favoritesCount}</div>
+          <div class="stat-label">Избранное</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${cartCount}</div>
+          <div class="stat-label">В корзине</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Заказы</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${registrationDate}</div>
+          <div class="stat-label">Дата регистрации</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-details">
+      <div class="detail-card">
+        <h3>👤 Личная информация</h3>
+        <div class="detail-row">
+          <span class="detail-label">Имя:</span>
+          <span class="detail-value">${firstName}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Фамилия:</span>
+          <span class="detail-value">${lastName}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Email:</span>
+          <span class="detail-value">${email}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Телефон:</span>
+          <span class="detail-value">${phone}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Выход из аккаунта
+function logout() {
+  // Удаляем данные авторизации
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('currentUser');
+  
+  // Перенаправляем на главную страницу
+  window.location.href = 'index.html';
+}
+
+// Загрузка профиля при загрузке страницы
+window.addEventListener('DOMContentLoaded', loadProfile);
+
+// Проверка сервера при загрузке
+window.addEventListener('load', async () => {
+  try {
+    const response = await fetch(`${API_URL}/test`);
+    if (response.ok) {
+      console.log('✅ Сервер доступен');
+    }
+  } catch (error) {
+    console.warn('⚠️ Сервер не отвечает. Запустите: node server.js');
+  }
+});
+</script>
+
+<script src="js/header.js"></script>
+</body>
+</html>

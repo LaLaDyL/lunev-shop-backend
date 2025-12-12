@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Корзина | L-U-N-E-V</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .empty-cart {
+      text-align: center;
+      padding: 50px 20px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    
+    .empty-cart button {
+      background: #0f4d2b;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 10000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .notification.error {
+      background: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <img src="images/logo1.png" alt="L-U-N-E-V" class="logo-img">
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav">
+        <a href="favorites.html">❤️ Избранное</a>
+        <a href="cart.html" class="active">🛒 Корзина</a>
+        <a href="login.html" class="login-link">👤 Войти</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- === СЕКЦИЯ КОРЗИНЫ === -->
+<section class="cart-section">
+  <h2>🛒 Моя корзина</h2>
+
+  <div class="cart-container" id="cart-container">
+    <!-- Товары появятся здесь -->
+  </div>
+</section>
+
+<footer class="footer">
+  <!-- стандартный футер -->
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>L-U-N-E-V</h3>
+      <p>Будущее Здесь и Сейчас. Самые современные технологии и гаджеты для вашего комфорта.</p>
+      <div class="social-links">
+        <a href="#"> VK</a>
+        <a href="#"> Telegram</a>
+        <a href="#"> Twitter</a>
+        <a href="#"> YouTube</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Магазин</h4>
+      <ul>
+        <li><a href="product-telephone.html">Смартфоны</a></li>
+        <li><a href="product-consoles.html">Игровые консоли</a></li>
+        <li><a href="product-headphone.html">Наушники</a></li>
+        <li><a href="product-port-consoles.html">Портативные консоли</a></li>
+        <li><a href="product-washmashine.html">Техника для дома</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Помощь</h4>
+      <ul>
+        <li><a href="#">Центр поддержки</a></li>
+        <li><a href="#">Доставка и оплата</a></li>
+        <li><a href="#">Гарантия и возврат</a></li>
+        <li><a href="#">Частые вопросы</a></li>
+        <li><a href="#">Контакты</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Контакты</h4>
+      <div class="contact-info">
+        <p>📧 Email: MR.ANDREW.BRAUNI@mamamia.ru</p>
+        <p>📞 Телефон: +7 (914) 123-4-88</p>
+        <p>🕒 Время работы: 9:00-21:00</p>
+        <p>📍 Адрес: г. Удомля, ул. Космонавтов, 42</p>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Безопасность</h4>
+      <div class="security-badges">
+        <div>🔒 Защита есть - клянусь</div>
+        <div>💳 Безопасная оплата - можно авшорами</div>
+        <div>📦 Гарантия доставки - 2 недели</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2025 L-U-N-E-V. Будущее Здесь и Сейчас. Все права защищены.</p>
+    <div class="footer-links">
+      <a href="#">Политика конфиденциальности</a>
+      <a href="#">Условия использования</a>
+      <a href="#">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const API_URL = 'http://localhost:3002/api';
+
+// Функция показа уведомления
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `<span>${message}</span>`;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Загрузка корзины
+async function loadCart() {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const container = document.getElementById('cart-container');
+  
+  if (!currentUser.id) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <p>Войдите в аккаунт, чтобы видеть корзину</p>
+        <button onclick="window.location.href='login.html'">Войти</button>
+      </div>
+    `;
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/cart/user/${currentUser.id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.status === 'success' && data.cart && data.cart.length > 0) {
+      renderCart(data.cart);
+    } else {
+      container.innerHTML = '<div class="empty-cart"><p>Корзина пуста</p></div>';
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки корзины:', error);
+    container.innerHTML = `
+      <div class="empty-cart">
+        <p>Ошибка загрузки корзины</p>
+        <p><small>${error.message}</small></p>
+        <button onclick="window.location.href='index.html'">На главную</button>
+      </div>
+    `;
+  }
+}
+
+// Отображение корзины
+function renderCart(cartItems) {
+  const container = document.getElementById('cart-container');
+  
+  if (!cartItems || cartItems.length === 0) {
+    container.innerHTML = '<div class="empty-cart"><p>Корзина пуста</p></div>';
+    return;
+  }
+  
+  let html = '';
+  let total = 0;
+  
+  cartItems.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+    
+    // Получаем selectedMemory или оставляем пустым
+    const selectedMemory = item.selected_memory || item.selectedMemory || '';
+    
+    html += `
+      <div class="cart-item" data-index="${index}" data-id="${item.product_id || item.id}">
+        <img src="${item.main_image || item.image || 'images/default.jpg'}" alt="${item.name}">
+        <div class="cart-item-info">
+          <h3>${item.name}</h3>
+          ${selectedMemory ? `<p>Память: ${selectedMemory}</p>` : ''}
+          <p class="price">${item.price.toLocaleString('ru-RU')} ₽</p>
+          <div class="cart-item-controls">
+            <div class="quantity">
+              <button class="qty-btn" onclick="updateQuantity(${index}, ${item.quantity - 1})">−</button>
+              <span class="qty-value">${item.quantity}</span>
+              <button class="qty-btn" onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
+            </div>
+            <button class="remove-item" onclick="removeFromCartByIndex(${index})">🗑️</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `
+    <div class="cart-summary">
+      <p>Итого: <span class="total-price">${total.toLocaleString('ru-RU')} ₽</span></p>
+      <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+    </div>
+  `;
+  
+  container.innerHTML = html;
+}
+
+// Обновление количества по индексу
+async function updateQuantity(index, newQuantity) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  if (!currentUser.id) {
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  if (newQuantity < 1) {
+    // Если количество стало 0, удаляем товар
+    removeFromCartByIndex(index);
+    return;
+  }
+  
+  try {
+    // Сначала получим текущую корзину
+    const response = await fetch(`${API_URL}/cart/user/${currentUser.id}`);
+    const data = await response.json();
+    
+    if (data.status === 'success' && data.cart && data.cart[index]) {
+      const item = data.cart[index];
+      const selectedMemory = item.selected_memory || item.selectedMemory || null;
+      
+      const updateResponse = await fetch(`${API_URL}/cart/update-quantity`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          productId: item.product_id || item.id,
+          quantity: newQuantity,
+          selectedMemory: selectedMemory
+        })
+      });
+      
+      const updateData = await updateResponse.json();
+      if (updateData.status === 'success') {
+        loadCart();
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка обновления количества:', error);
+  }
+}
+
+// Удаление из корзины по индексу - БЕЗ АЛЕРТА!
+async function removeFromCartByIndex(index) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  if (!currentUser.id) {
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  try {
+    // Сначала получим текущую корзину
+    const response = await fetch(`${API_URL}/cart/user/${currentUser.id}`);
+    const data = await response.json();
+    
+    if (data.status === 'success' && data.cart && data.cart[index]) {
+      const item = data.cart[index];
+      const productId = item.product_id || item.id;
+      const selectedMemory = item.selected_memory || item.selectedMemory || null;
+      
+      // Попробуем универсальное удаление
+      await universalCartItemRemoval(currentUser.id, productId, selectedMemory);
+    }
+  } catch (error) {
+    console.error('Ошибка удаления по индексу:', error);
+  }
+}
+
+// Универсальное удаление товара из корзины
+async function universalCartItemRemoval(userId, productId, selectedMemory) {
+  try {
+    // Вариант 1: Удаление с selectedMemory
+    if (selectedMemory) {
+      const response1 = await fetch(`${API_URL}/cart/remove-item`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          productId: productId,
+          selectedMemory: selectedMemory
+        })
+      });
+      
+      const data1 = await response1.json();
+      if (data1.status === 'success') {
+        loadCart();
+        showNotification('Товар удален из корзины', 'success');
+        return;
+      }
+    }
+    
+    // Вариант 2: Удаление без selectedMemory
+    const response2 = await fetch(`${API_URL}/cart/remove-item`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId,
+        productId: productId,
+        selectedMemory: null
+      })
+    });
+    
+    const data2 = await response2.json();
+    if (data2.status === 'success') {
+      loadCart();
+      showNotification('Товар удален из корзины', 'success');
+      return;
+    }
+    
+    // Вариант 3: Альтернативный эндпоинт
+    const response3 = await fetch(`${API_URL}/cart/remove`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId,
+        productId: productId
+      })
+    });
+    
+    const data3 = await response3.json();
+    if (data3.status === 'success') {
+      loadCart();
+      showNotification('Товар удален из корзины', 'success');
+      return;
+    }
+    
+    // Если ничего не сработало
+    showNotification('Не удалось удалить товар', 'error');
+    
+  } catch (error) {
+    console.error('Ошибка универсального удаления:', error);
+    showNotification('Ошибка удаления товара', 'error');
+  }
+}
+
+// Оформление заказа
+function checkout() {
+  showNotification('Функция оформления заказа в разработке', 'error');
+}
+
+// Загрузка при открытии страницы
+document.addEventListener('DOMContentLoaded', loadCart);
+</script>
+
+<script src="js/header.js"></script>
+</body>
+</html>

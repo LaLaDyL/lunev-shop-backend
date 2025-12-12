@@ -1,0 +1,11 @@
+@echo off
+echo Запуск создания базы данных shop_lunev...
+echo.
+
+REM Запускаем PostgreSQL
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -f "C:\Users\KATANA\Desktop\create_database.sql"
+
+echo.
+echo База данных создана!
+echo.
+pause

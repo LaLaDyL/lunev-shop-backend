@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L-U-N-E-V | Товар</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .actions-buttons {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .buy-button {
+      flex: 1;
+      padding: 16px;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #0c10ff, #07f813);
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(255,102,0,0.4);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    
+    .buy-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255,102,0,0.5);
+    }
+    
+    .buy-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .favorite-button {
+      width: 60px;
+      padding: 16px;
+      font-size: 24px;
+      background: #fff;
+      border: 2px solid #0f4d2b;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .favorite-button:hover {
+      background: #ffe6e6;
+      transform: scale(1.1);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 10000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+      color: white;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      background: #4caf50;
+    }
+    
+    .notification.error {
+      background: #f44336;
+    }
+    
+    .notification.warning {
+      background: #ff9800;
+    }
+    
+    .memory-options button {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: 2px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .memory-options button:hover {
+      border-color: #0f4d2b;
+      background: #f0f8f0;
+    }
+    
+    .memory-options button.active {
+      border-color: #0f4d2b;
+      background: #0f4d2b;
+      color: white;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <a href="index.html" class="logo">
+        <img src="images/logo1.png" alt="L-U-N-E-V" class="logo-img">
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav">
+        <a href="favorites.html">❤️ Избранное</a>
+        <a href="cart.html">🛒 Корзина</a>
+        <a href="login.html" class="login-link">👤 Войти</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section class="product-page" id="product-page">
+  <div class="loading">
+    <p>⏳ Загрузка товара...</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>L-U-N-E-V</h3>
+      <p>Будущее Здесь и Сейчас. Самые современные технологии и гаджеты для вашего комфорта.</p>
+      <div class="social-links">
+        <a href="#"> VK</a>
+        <a href="#"> Telegram</a>
+        <a href="#"> Twitter</a>
+        <a href="#"> YouTube</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Магазин</h4>
+      <ul>
+        <li><a href="product-telephone.html">Смартфоны</a></li>
+        <li><a href="product-consoles.html">Игровые консоли</a></li>
+        <li><a href="product-headphone.html">Наушники</a></li>
+        <li><a href="product-port-consoles.html">Портативные консоли</a></li>
+        <li><a href="product-washmashine.html">Техника для дома</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Помощь</h4>
+      <ul>
+        <li><a href="#">Центр поддержки</a></li>
+        <li><a href="#">Доставка и оплата</a></li>
+        <li><a href="#">Гарантия и возврат</a></li>
+        <li><a href="#">Частые вопросы</a></li>
+        <li><a href="#">Контакты</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Контакты</h4>
+      <div class="contact-info">
+        <p>📧 Email: MR.ANDREW.BRAUNI@mamamia.ru</p>
+        <p>📞 Телефон: +7 (914) 123-4-88</p>
+        <p>🕒 Время работы: 9:00-21:00</p>
+        <p>📍 Адрес: г. Удомля, ул. Космонавтов, 42</p>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Безопасность</h4>
+      <div class="security-badges">
+        <div>🔒 Защита есть - клянусь</div>
+        <div>💳 Безопасная оплата - можно авшорами</div>
+        <div>📦 Гарантия доставки - 2 недели</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2025 L-U-N-E-V. Будущее Здесь и Сейчас. Все права защищены.</p>
+    <div class="footer-links">
+      <a href="#">Политика конфиденциальности</a>
+      <a href="#">Условия использования</a>
+      <a href="#">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Основные константы
+const API_BASE_URL = 'http://localhost:3002/api';
+
+// Функция показа уведомления
+function showNotification(message, type = 'success') {
+  // Удаляем старые уведомления
+  const oldNotifications = document.querySelectorAll('.notification');
+  oldNotifications.forEach(n => n.remove());
+  
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `<span>${message}</span>`;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Загрузка товара
+async function loadProduct() {
+  const page = document.getElementById('product-page');
+  const params = new URLSearchParams(window.location.search);
+  const productId = parseInt(params.get('id')) || 1;
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/product-by-id/${productId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.status !== 'success') {
+      page.innerHTML = `
+        <div class="loading">
+          <p>❌ Товар не найден</p>
+          <button onclick="window.location.href='index.html'">На главную</button>
+        </div>
+      `;
+      return;
+    }
+    
+    const product = data.product;
+    
+    // Рендерим страницу товара
+    page.innerHTML = `
+      <div class="product-gallery">
+        <div class="thumbnails">
+          ${product.images && product.images.length > 0 ? 
+            product.images.map((img, index) => `
+              <img src="${img}" class="thumb ${index === 0 ? 'active' : ''}" 
+                   onclick="changeMainImage('${img}', this)">
+            `).join('') : 
+            `<img src="${product.main_image}" class="thumb active">`
+          }
+        </div>
+        <div class="main-image">
+          <img src="${product.main_image}" alt="${product.name}" id="main-img">
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h1>${product.name}</h1>
+        <div class="price">${product.price.toLocaleString('ru-RU')} ₽ 
+          ${product.bonus_points > 0 ? 
+            `<span class="bonus">+${product.bonus_points.toLocaleString('ru-RU')} бонусов</span>` : 
+            ''
+          }
+        </div>
+        
+        <div class="actions-buttons">
+          <button class="buy-button" id="add-to-cart-btn">Добавить в корзину</button>
+          <button class="favorite-button" id="add-to-fav-btn">❤️</button>
+        </div>
+
+        ${product.memory_options && product.memory_options.length > 0 ? `
+        <div class="memory-options">
+          <p><strong>Встроенная память:</strong></p>
+          ${product.memory_options.map((mem, index) => 
+            `<button class="memory ${index === 0 ? 'active' : ''}" data-memory="${mem}">${mem}</button>`
+          ).join('')}
+        </div>` : ''}
+
+        ${product.color_options ? `
+        <div class="color-options">
+          <p><strong>Цвет:</strong> ${product.color_options}</p>
+        </div>` : ''}
+
+        ${product.description ? `
+        <div class="availability">
+          <h3>Описание</h3>
+          ${Array.isArray(product.description) ? 
+            product.description.map(desc => `<p>${desc}</p>`).join('') : 
+            `<p>${product.description}</p>`
+          }
+        </div>` : ''}
+
+        ${product.delivery_options && product.delivery_options.length > 0 ? `
+        <div class="delivery">
+          <h3>Доставка</h3>
+          ${product.delivery_options.map(d => `<p>${d}</p>`).join('')}
+        </div>` : ''}
+      </div>
+    `;
+    
+    // После рендеринга проверяем избранное
+    await checkFavoriteStatus(productId);
+    
+    // Добавляем обработчики событий
+    setupEventListeners(productId);
+    
+  } catch (error) {
+    console.error('Ошибка загрузки товара:', error);
+    page.innerHTML = `
+      <div class="loading">
+        <p>❌ Ошибка загрузки товара</p>
+        <p><small>${error.message}</small></p>
+        <button onclick="window.location.href='index.html'">На главную</button>
+      </div>
+    `;
+  }
+}
+
+// Функция смены главного изображения
+function changeMainImage(src, clickedElement) {
+  document.getElementById('main-img').src = src;
+  
+  // Обновляем активный класс на миниатюрах
+  document.querySelectorAll('.thumb').forEach(thumb => {
+    thumb.classList.remove('active');
+  });
+  
+  if (clickedElement) {
+    clickedElement.classList.add('active');
+  }
+}
+
+// Проверяем, добавлен ли товар в избранное
+async function checkFavoriteStatus(productId) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const favBtn = document.getElementById('add-to-fav-btn');
+  
+  if (!currentUser.id || !favBtn) return;
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/favorites/user/${currentUser.id}`);
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.status === 'success' && data.favorites) {
+        const isFavorite = data.favorites.some(fav => fav.product_id == productId);
+        
+        if (isFavorite) {
+          favBtn.textContent = '💔';
+          favBtn.title = 'Удалить из избранного';
+        } else {
+          favBtn.textContent = '❤️';
+          favBtn.title = 'Добавить в избранное';
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка проверки избранного:', error);
+  }
+}
+
+// Настройка обработчиков событий
+function setupEventListeners(productId) {
+  const cartBtn = document.getElementById('add-to-cart-btn');
+  const favBtn = document.getElementById('add-to-fav-btn');
+  
+  if (cartBtn) {
+    cartBtn.addEventListener('click', () => addToCart(productId));
+  }
+  
+  if (favBtn) {
+    favBtn.addEventListener('click', () => toggleFavorite(productId));
+  }
+  
+  // Обработчики для выбора памяти
+  document.querySelectorAll('.memory').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.memory').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+}
+
+// Функция добавления в корзину
+async function addToCart(productId) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const cartBtn = document.getElementById('add-to-cart-btn');
+  
+  if (!currentUser.id) {
+    showNotification('Сначала войдите в систему!', 'error');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1500);
+    return;
+  }
+  
+  // Получаем выбранную память
+  const selectedMemory = document.querySelector('.memory.active')?.getAttribute('data-memory') || null;
+  const originalText = cartBtn.textContent;
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/cart/add-item`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        productId: productId,
+        quantity: 1,
+        selectedMemory: selectedMemory
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      cartBtn.textContent = '✅ В корзине';
+      cartBtn.disabled = true;
+      showNotification('Товар добавлен в корзину!', 'success');
+      
+      // Через 2 секунды возвращаем обычное состояние
+      setTimeout(() => {
+        cartBtn.textContent = originalText;
+        cartBtn.disabled = false;
+      }, 2000);
+    } else {
+      showNotification('Ошибка: ' + data.message, 'error');
+    }
+  } catch (error) {
+    console.error('Ошибка добавления в корзину:', error);
+    showNotification('Ошибка добавления в корзину', 'error');
+  }
+}
+
+// Функция добавления/удаления из избранного
+async function toggleFavorite(productId) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const favBtn = document.getElementById('add-to-fav-btn');
+  
+  if (!currentUser.id) {
+    showNotification('Сначала войдите в систему!', 'error');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1500);
+    return;
+  }
+  
+  const isFavorite = favBtn.textContent === '💔';
+  
+  try {
+    if (isFavorite) {
+      // Удаляем из избранного
+      const response = await fetch(`${API_BASE_URL}/favorites/remove-item`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          productId: productId
+        })
+      });
+      
+      const data = await response.json();
+      if (data.status === 'success') {
+        favBtn.textContent = '❤️';
+        favBtn.title = 'Добавить в избранное';
+        showNotification('Удалено из избранного', 'success');
+      }
+    } else {
+      // Добавляем в избранное
+      const response = await fetch(`${API_BASE_URL}/favorites/add-item`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          productId: productId
+        })
+      });
+      
+      const data = await response.json();
+      if (data.status === 'success') {
+        favBtn.textContent = '💔';
+        favBtn.title = 'Удалить из избранного';
+        showNotification('Добавлено в избранное!', 'success');
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка работы с избранным:', error);
+    showNotification('Ошибка работы с избранным', 'error');
+  }
+}
+
+// Загружаем товар при открытии страницы
+document.addEventListener('DOMContentLoaded', loadProduct);
+</script>
+
+<script src="js/header.js"></script>
+</body>
+</html>

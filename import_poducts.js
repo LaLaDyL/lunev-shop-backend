@@ -1,0 +1,157 @@
+const { Pool } = require('pg');
+const fs = require('fs');
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'shop_lunev',
+  password: '123',
+  port: 5432,
+});
+
+async function importProducts() {
+  let client;
+  try {
+    client = await pool.connect();
+    console.log('🔄 Начинаем импорт товаров...\n');
+    
+    // 1. Читаем products.json
+    const productsData = JSON.parse(fs.readFileSync('products.json', 'utf8'));
+    console.log(`📦 Найдено ${productsData.length} товаров в JSON\n`);
+    
+// 2. Очищаем старые данные
+console.log('🧹 Очищаем старые данные (Cart, Favorites, Products)...');
+
+// Сначала очищаем зависимые таблицы (Корзина и Избранное)
+await client.query('DELETE FROM cart');
+await client.query('DELETE FROM favorites');
+
+// Затем очищаем основную таблицу товаров
+await client.query('DELETE FROM products');
+
+// Сбрасываем счетчики ID для всех таблиц
+await client.query('ALTER SEQUENCE products_product_id_seq RESTART WITH 1');
+await client.query('ALTER SEQUENCE cart_cart_id_seq RESTART WITH 1');
+await client.query('ALTER SEQUENCE favorites_favorite_id_seq RESTART WITH 1');
+
+console.log('✅ Старые данные успешно удалены и счетчики сброшены\n');
+    
+    // 3. Проверяем и добавляем категории
+    console.log('📁 Работаем с категориями...');
+    
+    // Сначала проверим есть ли категории
+    const catResult = await client.query('SELECT COUNT(*) FROM categories');
+    if (parseInt(catResult.rows[0].count) === 0) {
+      console.log('📝 Добавляем категории...');
+      const categories = {
+        'telephone': 'Смартфоны',
+        'consoles': 'Игровые консоли', 
+        'headphone': 'Наушники',
+        'port-consoles': 'Портативные консоли',
+        'washmashine': 'Техника для дома',
+        'notebook': 'Ноутбуки',
+        'poloroid': 'Фототехника',
+        'watches': 'Часы',
+        'TV': 'Телевизоры'
+      };
+      
+      for (const [slug, name] of Object.entries(categories)) {
+        await client.query(
+          'INSERT INTO categories (name, slug) VALUES ($1, $2)',
+          [name, slug]
+        );
+      }
+      console.log('✅ 9 категорий добавлены\n');
+    } else {
+      console.log('✅ Категории уже существуют\n');
+    }
+    
+    // 4. Импортируем товары
+    console.log('📥 Импортируем товары...');
+    let importedCount = 0;
+    
+    for (const product of productsData) {
+      // Определяем категорию из main_image
+      let categoryId = 1; // по умолчанию смартфоны
+      
+      if (product.main_image.includes('telephone')) categoryId = 1;
+      else if (product.main_image.includes('consoles')) categoryId = 2;
+      else if (product.main_image.includes('headphone')) categoryId = 3;
+      else if (product.main_image.includes('port-consoles')) categoryId = 4;
+      else if (product.main_image.includes('wash')) categoryId = 5;
+      else if (product.main_image.includes('notebook')) categoryId = 6;
+      else if (product.main_image.includes('poloroid')) categoryId = 7;
+      else if (product.main_image.includes('watches')) categoryId = 8;
+      else if (product.main_image.includes('TV')) categoryId = 9;
+      
+      // Извлекаем бонусные баллы
+      const bonusMatch = product.bonus ? product.bonus.match(/\d+/) : null;
+      const bonusPoints = bonusMatch ? parseInt(bonusMatch[0].replace(/\s/g, '')) : 0;
+      
+      // Подготавливаем данные
+      const description = Array.isArray(product.description) 
+        ? product.description.join(' ') 
+        : (product.description || '');
+      
+      const colorOptions = product.color_options || '';
+      
+      // В JSON поле называется "delivery", а не "delivery_options"
+      const deliveryArray = product.delivery || [];
+      
+      try {
+        await client.query(
+          `INSERT INTO products (
+            name, description, price, category_id, bonus_points, 
+            main_image, images, memory_options, color_options, 
+            delivery_options, stock_quantity
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [
+            product.name,
+            description,
+            product.price,
+            categoryId,
+            bonusPoints,
+            product.main_image,
+            product.images || [], // массив картинок
+            product.memory_options || [], // массив вариантов памяти
+            colorOptions,
+            deliveryArray, // массив вариантов доставки (из поля "delivery")
+            50 // количество на складе
+          ]
+        );
+        
+        importedCount++;
+        
+        // Прогресс каждые 5 товаров
+        if (importedCount % 5 === 0) {
+          console.log(`   Импортировано: ${importedCount}/${productsData.length}`);
+        }
+      } catch (error) {
+        console.error(`❌ Ошибка при импорте товара "${product.name}":`, error.message);
+      }
+    }
+    
+    console.log(`\n✅ Импорт завершен! Добавлено ${importedCount} товаров`);
+    
+    // 5. Проверяем результат
+    console.log('\n📊 Проверка импорта:');
+    const countResult = await client.query('SELECT COUNT(*) FROM products');
+    console.log(`   Всего товаров в базе: ${countResult.rows[0].count}`);
+    
+    const sampleResult = await client.query('SELECT product_id, name, price FROM products LIMIT 3');
+    console.log('\n   Примеры товаров:');
+    sampleResult.rows.forEach(row => {
+      console.log(`   ${row.product_id}. ${row.name} - ${row.price} руб.`);
+    });
+    
+  } catch (error) {
+    console.error('❌ Критическая ошибка импорта:', error);
+  } finally {
+    if (client) client.release();
+    await pool.end();
+    console.log('\n🔚 Соединение с базой закрыто');
+  }
+}
+
+// Запускаем импорт
+importProducts();
