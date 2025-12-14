@@ -209,13 +209,12 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/product-by-id/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
     const result = await pool.query(`
       SELECT p.*, c.name as category_name 
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id 
       WHERE p.id = $1
-    `, [id]);
+    `,[id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -227,7 +226,6 @@ app.get('/api/product-by-id/:id', async (req, res) => {
     const product = result.rows[0];
     
     // Преобразуем только существующие поля:
-    // (Удалены: images, memory_options, delivery_options, т.к. их нет в таблице products)
     product.price = parseFloat(product.price);
     
     if (product.bonus_points > 0) {
