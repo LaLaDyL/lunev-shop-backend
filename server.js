@@ -178,7 +178,7 @@ app.get('/api/products', async (req, res) => {
     const result = await pool.query(`
       SELECT p.*, c.name as category_name 
       FROM products p 
-      LEFT JOIN categories c ON p.category_id = c.category_id 
+      LEFT JOIN categories c ON p.category_id = c.id 
       ORDER BY p.product_id
     `);
 
