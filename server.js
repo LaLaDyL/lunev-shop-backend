@@ -181,7 +181,7 @@ app.get('/api/products', async (req, res) => {
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id 
       ORDER BY p.id // <-- ИСПРАВЛЕНИЕ: ДОЛЖНО БЫТЬ p.id
-    `);
+`);
 
     // Преобразуем массивы
     const products = result.rows.map(product => ({
@@ -210,12 +210,12 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/product-by-id/:id', async (req, res) => {
   try {
     const { id } = req.params;
-const result = await pool.query(` // <-- Убедитесь, что здесь нет невидимых символов
+const result = await pool.query(`
       SELECT p.*, c.name as category_name 
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id 
       WHERE p.id = $1
-    `,[id]);
+`,[id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -473,7 +473,7 @@ app.get('/api/favorites/user/:userId', async (req, res) => {
     
     const result = await pool.query(`
       SELECT f.favorite_id, f.user_id, f.product_id, f.added_at,
-             p.name, p.price, p.main_image
+      p.name, p.price, p.main_image
       FROM favorites f 
       JOIN products p ON f.product_id = p.product_id 
       WHERE f.user_id = $1
