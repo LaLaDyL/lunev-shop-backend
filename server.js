@@ -183,14 +183,12 @@ app.get('/api/products', async (req, res) => {
     `);
     
     // Преобразуем массивы
-    const products = result.rows.map(product => ({
-      ...product,
-      images: parsePostgresArray(product.images),
-      memory_options: parsePostgresArray(product.memory_options),
-      delivery_options: parsePostgresArray(product.delivery_options),
-      price: parseFloat(product.price)
-    }));
-    
+    const products = result.rows.map(product => ({
+      ...product,
+      // images, memory_options, delivery_options - удалены, т.к. их нет в БД
+      price: parseFloat(product.price)
+    }));
+
     res.json({
       status: 'success',
       count: products.length,
