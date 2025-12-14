@@ -176,12 +176,7 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
 // В маршруте /api/products (Строка ~178)
-    const result = await pool.query(`
-      SELECT p.*, c.name as category_name
-      FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      ORDER BY p.id // <-- ИСПРАВЛЕНИЕ: ДОЛЖНО БЫТЬ p.id
-`);
+    const result = await pool.query(`SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.id`);
 
     // Преобразуем массивы
     const products = result.rows.map(product => ({
@@ -210,9 +205,7 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/product-by-id/:id', async (req, res) => {
   try {
     const { id } = req.params;
-const result = await pool.query(`
-SELECT p.*, c.name as category_name FROM products p LEFT JOI categories c ON p.category_id = c.id WHERE p.id =$1
-`,[id]);
+const result = await pool.query(`SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.id =$1`,[id]);
    
     if (result.rows.length === 0) {
       return res.status(404).json({
