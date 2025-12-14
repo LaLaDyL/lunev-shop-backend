@@ -179,7 +179,7 @@ app.get('/api/products', async (req, res) => {
       SELECT p.*, c.name as category_name 
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id 
-      ORDER BY p.product_id
+      ORDER BY p.id
     `);
 
     // Преобразуем массивы
@@ -214,7 +214,7 @@ app.get('/api/product-by-id/:id', async (req, res) => {
       SELECT p.*, c.name as category_name 
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id 
-      WHERE p.product_id = $1
+      WHERE p.id = $1
     `, [id]);
     
     if (result.rows.length === 0) {
