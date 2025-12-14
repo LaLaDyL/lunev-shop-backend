@@ -18,13 +18,13 @@ app.use(express.json());
 
 // ============ ПОДКЛЮЧЕНИЕ К POSTGRESQL (для Render/Supabase) ============
 const pool = new Pool({
-  // Используем переменную окружения DATABASE_URL, которую мы настроим на Render.
-  // Пока для локального теста используем ваш URI от Supabase
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:123123@db.wwmcuczirexqddyxysus.supabase.co:5432/postgres',
-  ssl: {
-    // Эта настройка обязательна для работы с Supabase
-    rejectUnauthorized: false
-  }
+  // Используем переменную окружения DATABASE_URL, которую мы настроим на Render.
+  // Пока для локального теста используем ваш URI от Supabase
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:MySecretPass1231@db.wwmcuczirexqddyxysus.supabase.co:5432/postgres',
+  ssl: {
+    // Эта настройка обязательна для работы с Supabase
+    rejectUnauthorized: false
+  }
 });
 
 // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
