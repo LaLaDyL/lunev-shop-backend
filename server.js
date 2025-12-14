@@ -211,10 +211,7 @@ app.get('/api/product-by-id/:id', async (req, res) => {
   try {
     const { id } = req.params;
 const result = await pool.query(`
-      SELECT p.*, c.name as category_name
-      FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.id = $1
+SELECT p.*, c.name as category_name FROM products p LEFT JOI categories c ON p.category_id = c.id WHERE p.id =$1
 `,[id]);
    
     if (result.rows.length === 0) {
