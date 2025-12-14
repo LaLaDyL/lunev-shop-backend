@@ -181,7 +181,7 @@ app.get('/api/products', async (req, res) => {
       LEFT JOIN categories c ON p.category_id = c.category_id 
       ORDER BY p.product_id
     `);
-    
+
     // Преобразуем массивы
     const products = result.rows.map(product => ({
       ...product,
@@ -207,47 +207,45 @@ app.get('/api/products', async (req, res) => {
 
 // 5. Получение товара по ID
 app.get('/api/product-by-id/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const result = await pool.query(`
-      SELECT p.*, c.name as category_name 
-      FROM products p 
-      LEFT JOIN categories c ON p.category_id = c.category_id 
-      WHERE p.product_id = $1
-    `, [id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Товар не найден'
-      });
-    }
-    
-    const product = result.rows[0];
-    
-    // Преобразуем массивы
-    product.images = parsePostgresArray(product.images);
-    product.memory_options = parsePostgresArray(product.memory_options);
-    product.delivery_options = parsePostgresArray(product.delivery_options);
-    product.price = parseFloat(product.price);
-    
-    if (product.bonus_points > 0) {
-      product.bonus = `+${product.bonus_points.toLocaleString('ru-RU')} бонусов`;
-    }
-    
-    res.json({
-      status: 'success',
-      product: product
-    });
-    
-  } catch (error) {
-    console.error('❌ Ошибка получения товара:', error);
-    res.status(500).json({ 
-      status: 'error', 
-      message: 'Ошибка получения товара' 
-    });
-  }
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(`
+      SELECT p.*, c.name as category_name 
+      FROM products p 
+      LEFT JOIN categories c ON p.category_id = c.id 
+      WHERE p.product_id = $1
+    `, [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Товар не найден'
+      });
+    }
+    
+    const product = result.rows[0];
+    
+    // Преобразуем только существующие поля:
+    // (Удалены: images, memory_options, delivery_options, т.к. их нет в таблице products)
+    product.price = parseFloat(product.price);
+    
+    if (product.bonus_points > 0) {
+      product.bonus = `+${product.bonus_points.toLocaleString('ru-RU')} бонусов`;
+    }
+    
+    res.json({
+      status: 'success',
+      product: product
+    });
+    
+  } catch (error) {
+    console.error('❌ Ошибка получения товара:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Ошибка получения товара' 
+    });
+  }
 });
 
 // 6. Добавление в корзину
