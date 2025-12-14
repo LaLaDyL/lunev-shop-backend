@@ -19,11 +19,22 @@ async function importProducts() {
     const productsData = JSON.parse(fs.readFileSync('products.json', 'utf8'));
     console.log(`📦 Найдено ${productsData.length} товаров в JSON\n`);
     
-    // 2. Очищаем старые товары
-    console.log('🧹 Очищаем старые товары...');
-    await client.query('DELETE FROM products');
-    await client.query('ALTER SEQUENCE products_product_id_seq RESTART WITH 1');
-    console.log('✅ Старые товары удалены\n');
+// 2. Очищаем старые данные
+console.log('🧹 Очищаем старые данные (Cart, Favorites, Products)...');
+
+// Сначала очищаем зависимые таблицы (Корзина и Избранное)
+await client.query('DELETE FROM cart');
+await client.query('DELETE FROM favorites');
+
+// Затем очищаем основную таблицу товаров
+await client.query('DELETE FROM products');
+
+// Сбрасываем счетчики ID для всех таблиц
+await client.query('ALTER SEQUENCE products_product_id_seq RESTART WITH 1');
+await client.query('ALTER SEQUENCE cart_cart_id_seq RESTART WITH 1');
+await client.query('ALTER SEQUENCE favorites_favorite_id_seq RESTART WITH 1');
+
+console.log('✅ Старые данные успешно удалены и счетчики сброшены\n');
     
     // 3. Проверяем и добавляем категории
     console.log('📁 Работаем с категориями...');

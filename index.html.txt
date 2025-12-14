@@ -207,7 +207,13 @@
     </div>
   </div>
 </footer>
-
+<script>
+    // Публичный адрес API вашего сервера на Render
+    const API_BASE_URL = 'https://lunev-shop-backend.onrender.com';
+    // Используем его так:
+fetch(`${API_BASE_URL}/api/products`);
+    // Этот адрес используется для доступа к API (например, для загрузки товаров)
+</script>
 <script src="js/header.js"></script>
 </body>
 </html>

@@ -207,7 +207,7 @@
 
 <script>
 // Основные константы
-const API_BASE_URL = 'http://localhost:3002/api';
+const API_URL = 'https://lunev-shop-backend.onrender.com/api';
 
 // Функция показа уведомления
 function showNotification(message, type = 'success') {
